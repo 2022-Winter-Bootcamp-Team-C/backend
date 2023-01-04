@@ -13,4 +13,4 @@ class Member(models.Model):
     is_deleted = models.BinaryField(default=b'\x08')
 
     class Meta:
-        db_table = 'member'
+        db_table = 'user'
