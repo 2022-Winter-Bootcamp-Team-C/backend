@@ -15,29 +15,13 @@ from .serializers import UserSignupResponse
 from .service import create_user
 
 
-# Create your views here.
-
-# @permission_classes((permissions.AllowAny,))
 @api_view(['POST'])
 def join(request):
-    # if request.method == 'GET':  # GET == User 전체 조회
-    #     query_set = User.objects.all()
-    #     serializer = UserSerializer(query_set, many=True)
-    #     return JsonResponse(serializer.data, safe=False)
-    # if request.method == 'POST':  # POST == 회원가입
     email = request.data['email']
     password = request.data['password']
     new_user = create_user(email, password)
     data = UserSignupResponse(new_user, many=False).data
     return JsonResponse(data, status=201)
-
-
-        # data = JSONParser().parse(request)
-        # serializer = UserSerializer(data=data)
-        # if serializer.is_valid():
-        #     serializer.save()
-        #     return JsonResponse(serializer.data, status=201)
-        # return JsonResponse(serializer.errors, status=400)
 
 
 @api_view(['POST'])
