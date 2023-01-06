@@ -1,5 +1,3 @@
-#sample_swagger/urls.py
-
 from django.urls import path
 #from rest_framework.routers import DefaultRouter
 from sample_swagger.views import TestView, SerializerView

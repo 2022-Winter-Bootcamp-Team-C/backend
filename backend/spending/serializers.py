@@ -7,11 +7,14 @@ class SpendingGetSerializer(ModelSerializer):
         model = Spending
         fields = ['spending_id', 'date', 'cost', 'purpose', 'memo']
 
+
 class SpendingPostSerializer(ModelSerializer):
     class Meta:
         model = Spending
         fields = '__all__'
+
+
 class SpendingGettoalcostSerializer(ModelSerializer):
     class Meta:
         model = Spending
-        fields =['cost']
+        fields = ['cost']
