@@ -2,6 +2,7 @@ from django.urls import path, include
 from . import views
 
 urlpatterns = [
-    # path('/new', views.addSpending),
-    # path('login', views.login),
+    path('spending/<user_id>', views.getSpendingdatas),
+    path('spending/new/', views.postSendingdata),
+    path('spending/total-cost/', views.totalSpendingcost),
 ]
