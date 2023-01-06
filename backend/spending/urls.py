@@ -13,4 +13,5 @@ urlpatterns = [
     path('spending/new/', views.postSendingdata),
     path('spending/total-cost/', views.totalSpendingcost),
     path('spending/purpose_ration/<user_id>', views.get_spending_rate_by_purpose),
+    path('spending/total_spending/<user_id>', views.get_spending_this_month),
 ]

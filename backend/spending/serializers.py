@@ -5,7 +5,7 @@ from .models import Spending
 class SpendingGetSerializer(ModelSerializer):
     class Meta:
         model = Spending
-        fields = ['spending_id', 'date', 'cost', 'purpose', 'memo']
+        fields = ['spending_id', 'when', 'cost', 'purpose', 'memo']
 
 
 class SpendingPostSerializer(ModelSerializer):
