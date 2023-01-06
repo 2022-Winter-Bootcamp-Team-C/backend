@@ -7,15 +7,14 @@ from user.models import User
 
 class Spending(models.Model):
     spending_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, null=False)  # PK
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     cost = models.DecimalField(decimal_places=0, max_digits=7,null=False)
     date = models.DateTimeField(auto_now=True, blank=True)
     memo = models.CharField(max_length=20)
     purpose = models.CharField(max_length=10)
     created_at = models.DateTimeField(auto_now_add=True, blank=True)
     updated_at = models.DateTimeField(auto_now_add=True, blank=True)
-    is_deleted = models.SmallIntegerField(default=b'\x08')
-
+    is_deleted = models.BooleanField(default=b'\x08')
     class Meta:
         db_table = 'spending'
 

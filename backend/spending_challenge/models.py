@@ -7,11 +7,11 @@ from user.models import User
 
 class Spending_challenge(models.Model):
     challenge_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, null=False)  # PK
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     budget = models.DecimalField(decimal_places=0, max_digits=8, null=False)
     created_at = models.DateTimeField(auto_now_add=True, blank=True)
     updated_at = models.DateTimeField(auto_now_add=True, blank=True)
-    is_deleted = models.BinaryField(default=b'\x08')
+    is_deleted = models.BooleanField(default=b'\x08')
 
     class Meta:
         db_table = 'spending_challenge'
