@@ -12,7 +12,7 @@ class Income(models.Model):
     purpose = models.CharField(max_length=10)
     created_at = models.DateTimeField(auto_now_add=True, blank=True)
     updated_at = models.DateTimeField(auto_now_add=True, blank=True)
-    is_deleted = models.BinaryField(default=b'\x08')
+    is_deleted = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'income'
