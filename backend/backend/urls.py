@@ -41,7 +41,7 @@ schema_view = get_schema_view(
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     path('api/v1/user/', include('user.urls')),
-    path('api/v1/', include('user.urls')),
+    path('api/v1/login', include('user.urls')),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('admin', admin.site.urls),
     path('api/', include(('sample_swagger.urls', 'api'))),
