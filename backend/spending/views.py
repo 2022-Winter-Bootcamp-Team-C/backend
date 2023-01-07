@@ -95,8 +95,8 @@ def get_spending_rate_by_purpose(request, user_id):
 
 @api_view(['GET'])  # D-2 금월 지출 조회
 def get_spending_this_month(request, user_id):
-
-    this_month_spending = Spending.objects.filter(when__month=datetime.datetime.now().month)
+    this_month = datetime.datetime.now().month
+    this_month_spending = Spending.objects.filter(when__month=this_month)
 
     total_spending = 0
 
@@ -104,3 +104,24 @@ def get_spending_this_month(request, user_id):
         total_spending += i.cost
 
     return JsonResponse({'total_spending': int(total_spending)}, safe=False, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])  # D-3 한 달 전 지출 비교
+def get_comparison_last_month(request, user_id):
+    this_month = datetime.datetime.now()
+    last_month = this_month - relativedelta(months=1)
+
+    this_month_spending = Spending.objects.filter(when__month=this_month.month)
+    total_this_month_spending = 0
+    for i in this_month_spending:
+        total_this_month_spending += i.cost
+
+    last_month_spending = Spending.objects.filter(when__month=last_month.month)
+    total_last_month_spending = 0
+    for i in last_month_spending:
+        total_last_month_spending += i.cost
+
+    comparison_total_spending = total_this_month_spending - total_last_month_spending
+
+    return JsonResponse({'comparison_total_spending': int(comparison_total_spending)}, safe=False,
+                        status=status.HTTP_200_OK)
