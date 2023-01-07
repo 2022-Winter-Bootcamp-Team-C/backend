@@ -125,3 +125,17 @@ def get_comparison_last_month(request, user_id):
 
     return JsonResponse({'comparison_total_spending': int(comparison_total_spending)}, safe=False,
                         status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])  # D-5 3개월 전 지출 총합
+def get_three_month_ago_spending(request, user_id):
+
+    three_month_ago = datetime.datetime.now() - relativedelta(months=3)
+
+    three_month_ago_spending = Spending.objects.filter(when__month=three_month_ago.month)
+    total_three_month_ago_spending = 0
+    for i in three_month_ago_spending:
+        total_three_month_ago_spending += i.cost
+
+    return JsonResponse({'total_three_month_ago_spending': int(total_three_month_ago_spending)}, safe=False,
+                        status=status.HTTP_200_OK)
