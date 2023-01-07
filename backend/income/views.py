@@ -2,7 +2,6 @@ from math import trunc
 import datetime
 from dateutil.relativedelta import relativedelta
 from multiprocessing import connection
-
 from django.db.models import Sum
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -13,7 +12,22 @@ from rest_framework.response import Response
 from dateutil.relativedelta import relativedelta
 
 from .models import Income
+from .serializers import GetIncomeSerializer, PostIncomeSerializer
 
+
+@api_view(['GET'])
+def getincomeList(request, user_id):
+        datas = Income.objects.filter(user_id=user_id, is_deleted='0')
+        serializer = GetIncomeSerializer(datas, many=True)
+        return Response(serializer.data)
+
+@api_view(['POST'])
+def postnewIncome(request):
+        serializer = PostIncomeSerializer(data=request.data)
+        if serializer.is_valid():
+                serializer.save()
+                return JsonResponse(serializer.data, status=201)
+        return JsonResponse(serializer.errors, status=400)
 
 @api_view(['GET'])  # D-4 3개월 전 수입 총합
 def get_three_month_ago_income(request, user_id):
