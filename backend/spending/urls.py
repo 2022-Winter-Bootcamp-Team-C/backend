@@ -9,9 +9,9 @@ from . import views
 
 urlpatterns = [
     # path('', include(router.urls)),
-    path('spending/<user_id>', views.getSpendingdatas),
-    path('spending/new/', views.postSendingdata),
-    path('spending/total-cost/', views.totalSpendingcost),
-    path('spending/purpose_ration/<user_id>', views.get_spending_rate_by_purpose),
-    path('spending/total_spending/<user_id>', views.get_spending_this_month),
+    path('new/', views.postSendingdata),
+    path('spending-list/<user_id>', views.getSpendingdatas),
+    path('<spending_id>', views.putSendingdata),
+    path('purpose_ration/<user_id>', views.get_spending_rate_by_purpose),
+    path('total_spending/<user_id>', views.get_spending_this_month),
 ]
