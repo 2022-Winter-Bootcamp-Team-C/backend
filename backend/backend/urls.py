@@ -46,7 +46,7 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('admin', admin.site.urls),
     path('api/', include(('sample_swagger.urls', 'api'))),
-    path('api/v1/', include('spending.urls')),
+    path('api/v1/spending/', include('spending.urls')),
 ]
 
 if settings.DEBUG:
