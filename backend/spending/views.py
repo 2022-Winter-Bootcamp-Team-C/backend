@@ -1,4 +1,6 @@
 from math import trunc
+import datetime
+from dateutil.relativedelta import relativedelta
 from multiprocessing import connection
 
 from django.db.models import Sum
@@ -8,7 +10,7 @@ from rest_framework import status, viewsets
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework.response import Response
-
+from dateutil.relativedelta import relativedelta
 from .models import Spending
 from .serializers import SpendingGetSerializer, SpendingPostSerializer, SpendingGettoalcostSerializer
 
@@ -90,7 +92,15 @@ def get_spending_rate_by_purpose(request, user_id):
                          'alcohol_rate': alcohol_rate, 'mobile_rate': mobile_rate,
                          'beauty_rate': beauty_rate}, safe=False, status=status.HTTP_200_OK)
 
-#
-# class SpendingViewSet(viewsets.ModelViewSet):
-#     queryset = Spending.objects.all()
-#     serializer_class = SpendingPostSerializer
+
+@api_view(['GET'])  # D-2 금월 지출 조회
+def get_spending_this_month(request, user_id):
+
+    this_month_spending = Spending.objects.filter(when__month=datetime.datetime.now().month)
+
+    total_spending = 0
+
+    for i in this_month_spending:
+        total_spending += i.cost
+
+    return JsonResponse({'total_spending': int(total_spending)}, safe=False, status=status.HTTP_200_OK)
