@@ -1,6 +1,5 @@
 from math import trunc
 import datetime
-from dateutil.relativedelta import relativedelta
 from multiprocessing import connection
 
 from django.db.models import Sum
@@ -10,7 +9,6 @@ from rest_framework import status, viewsets
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from dateutil.relativedelta import relativedelta
 from .models import Spending
 from .serializers import SpendingGetSerializer, SpendingPostSerializer, SpendingGettoalcostSerializer
 
@@ -19,10 +17,10 @@ from .serializers import SpendingGetSerializer, SpendingPostSerializer, Spending
 
 @api_view(['GET'])  # B-1 해당 유저 지출 내역 조회
 def getSpendingdatas(request, user_id):
-    datas = Spending.objects.filter(
-        user_id=user_id)  # 앞의 user_id Spending 테이블의 user_id 칼럼 의미, 뒤 user_id는 요청 값으로 전달하는 user_id 의미
+    datas = Spending.objects.filter(user_id=user_id)  # 앞의 user_id Spending 테이블의 user_id 칼럼 의미, 뒤 user_id는 요청 값으로 전달하는 user_id 의미
     serializer = SpendingGetSerializer(datas, many=True)
     return Response(serializer.data)
+
 
 
 @api_view(['POST'])  # B-2 지출 등록폼 입력 후 DB에 저장
@@ -34,33 +32,15 @@ def postSendingdata(request):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-@api_view(['GET'])
-def totalSpendingcost(request, user_id):
-    try:
-        cursor = connection.cursor()
-
-        strSql = "SELECT cost FROM spending"
-        result = cursor.execute(strSql)
-        datas = cursor.fetchall()
-
-        connection.commit()
-        connection.close()
-
-        books = []
-        for data in datas:
-            row = {'code': data[0],
-                   'name': data[1],
-                   'author': data[2]}
-
-            books.append(row)
-
-    except:
-        connection.rollback()
-        print("Failed selecting in BookListView")
-
-    return render(request, 'book_list.html', {'books': books})
-
+@api_view(['PUT']) # B-3 지출 내역 수정
+def putSendingdata(request, spending_id):
+    reqData = request.data          #reqData는 내가 수정을 원해서 서버에 전달하는 json데이터를 의미
+    data = Spending.objects.get(spending_id=spending_id)            #앞의 spending_id는 Spending 테이블의 칼럼, 뒤의 spending_id는 요청 값으로 전달하는 spending_id 의미
+    serializer= SpendingPostSerializer(instance=data, data=reqData)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])  # D-1 용도별 지출 비율
 def get_spending_rate_by_purpose(request, user_id):
