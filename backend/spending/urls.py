@@ -10,7 +10,6 @@ from . import views
 urlpatterns = [
     # path('', include(router.urls)),
     path('new/', views.postSendingdata),
-    path('total-cost/', views.totalSpendingcost),
     path('purpose_ration/<user_id>', views.get_spending_rate_by_purpose),
     path('total_spending/<user_id>', views.get_spending_this_month),
     path('comparison_last_month/<user_id>', views.get_comparison_last_month),
