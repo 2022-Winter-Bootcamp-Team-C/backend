@@ -1,7 +1,7 @@
 from math import trunc
-import datetime
 from multiprocessing import connection
 
+import datetime
 from dateutil.relativedelta import relativedelta
 from django.db.models import Sum
 from django.http import JsonResponse
