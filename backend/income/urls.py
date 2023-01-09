@@ -3,5 +3,6 @@ from . import views
 
 urlpatterns = [
     path('<user_id>', views.getincomeList),
-    path('new/', views.postnewIncome)
+    path('new/', views.postnewIncome),
+    path('<income_id>', views.putnewIncome)
 ]
