@@ -27,18 +27,16 @@ def get_income_list(request, user_id):
         total_cost += i.cost
     return JsonResponse({'user_id,': user_id, 'income_list': serializer.data, 'total_price': total_cost})
 
-
-@api_view(['POST'])  # C-2 해당 유저 수입 등록
+@api_view(['POST']) # C-2 해당 유저 수입 등록
 def post_new_income(request):
-    serializer = PostIncomeSerializer(data=request.data)
-    if serializer.is_valid():
-        serializer.save()
-        return JsonResponse(serializer.data, status=201)
-    return JsonResponse(serializer.errors, status=400)
+        serializer = PostIncomeSerializer(data=request.data)
+        if serializer.is_valid():
+                serializer.save()
+                return JsonResponse(serializer.data, status=201)
+        return JsonResponse(serializer.errors, status=400)
 
-
-@api_view(['PUT', 'DELETE'])  # C-3,4 해당 유저 수입 수정, 삭제
-def put_new_income(request, income_id):
+@api_view(['PUT', 'DELETE']) # C-3,4 해당 유저 수입 수정, 삭제
+def put_new_Income(request, income_id):
     if request.method == 'PUT':
         data = request.data
         update_data = Income.objects.get(income_id=income_id)
