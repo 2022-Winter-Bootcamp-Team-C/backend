@@ -1,6 +1,6 @@
+import json
 from math import trunc
 from multiprocessing import connection
-
 import datetime
 from dateutil.relativedelta import relativedelta
 from django.db.models import Sum
@@ -11,21 +11,26 @@ from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Spending
-from .serializers import SpendingGetSerializer, SpendingPostSerializer, SpendingGettoalcostSerializer
+from .serializers import SpendingGetSerializer, SpendingPostSerializer, SpendingGettoalcostSerializer, \
+    spending_delete_serializer
 
 
 # Create your views here.
 
 @api_view(['GET'])  # B-1 해당 유저 지출 내역 조회
-def getSpendingdatas(request, user_id):
-    datas = Spending.objects.filter(
-        user_id=user_id)  # 앞의 user_id Spending 테이블의 user_id 칼럼 의미, 뒤 user_id는 요청 값으로 전달하는 user_id 의미
+def get_spending_datas(request, user_id):
+    datas = Spending.objects.filter(user_id=user_id, is_deleted=False)      # 앞의 user_id Spending 테이블의 user_id 칼럼 의미, 뒤 user_id는 요청 값으로 전달하는 user_id 의미
     serializer = SpendingGetSerializer(datas, many=True)
-    return Response(serializer.data)
+    total_spending = 0
+    for i in datas:
+        total_spending += i.cost
+    total_cost={'total_spending': int(total_spending)}
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 
 @api_view(['POST'])  # B-2 지출 등록폼 입력 후 DB에 저장
-def postSendingdata(request):
+def post_spending_data(request):
     reqData = request.data
     serializer = SpendingPostSerializer(data=reqData)
     if serializer.is_valid():
@@ -35,7 +40,7 @@ def postSendingdata(request):
 
 
 @api_view(['PUT'])  # B-3 지출 내역 수정
-def putSendingdata(request, spending_id):
+def put_spending_data(request, spending_id):
     reqData = request.data  # reqData는 내가 수정을 원해서 서버에 전달하는 json데이터를 의미
     data = Spending.objects.get(
         spending_id=spending_id)  # 앞의 spending_id는 Spending 테이블의 칼럼, 뒤의 spending_id는 요청 값으로 전달하는 spending_id 의미
@@ -44,7 +49,11 @@ def putSendingdata(request, spending_id):
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+@api_view(['PUT']) # B-4 지출 내역 삭제
+def delete_spending_data(requst, spending_id):
+    delete_data=Spending.objects.filter(spending_id=spending_id, is_deleted= False)
+    delete_data.update(is_deleted=True)
+    return Response(status=status.HTTP_201_CREATED)
 
 @api_view(['GET'])  # D-1 용도별 지출 비율
 def get_spending_rate_by_purpose(request, user_id):
@@ -140,5 +149,4 @@ def get_three_month_spending_average(request, user_id):
 
     three_month_spending_average = float(round(total_three_month_spending / 3, 1))
 
-    return JsonResponse({'three_month_spending_average': three_month_spending_average}, safe=False
-                        , status=status.HTTP_200_OK)
+    return JsonResponse({'three_month_spending_average': three_month_spending_average}, safe=False, status=status.HTTP_200_OK)
