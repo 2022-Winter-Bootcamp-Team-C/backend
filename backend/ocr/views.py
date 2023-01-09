@@ -39,6 +39,7 @@ def ocr_receipt(request):
     response = requests.request("POST", api_url, headers=headers, data=payload, files=files)
     print(json.loads(response.text))
     return Response(json.loads(response.text))
+    # print(response.text.encode('utf8'))
 
     # spec = json.loads(response.text)
     # print(spec['images'])
