@@ -38,21 +38,10 @@ def ocr_receipt(request):
     }
 
     response = requests.request("POST", api_url, headers=headers, data=payload, files=files)
-    # a = json.loads(response.text)
-    # a1 = a.get("images").get("receipt").get("result")
-    # print(a1.get("paymentInfo"))
-    # #
-    # print(a['images']['receipt']['result']['paymentInfo']['date']['text'])
-    # print(a['images']['receipt']['result']['totalPrice']['price']['text'])
 
-    # print(json.loads(response.text))
     response_body = json.loads(response.text)
-    # # a = spec[0]['images']
-    # a[0] = receipt
+
     images = response_body['images']
-    # b = a[0][1]
-    # print(a[0].get("meta"))
-    # print(a[0].get("receipt"))
 
     images_receipt = images[0].get("receipt")
     receipt_memo = images_receipt['result']['storeInfo']['name']['text']
@@ -62,6 +51,22 @@ def ocr_receipt(request):
                             , "date": receipt_date
                             , "cost": receipt_price},
                         safe=False, status=status.HTTP_200_OK)
+
+    # # a = spec[0]['images']
+    # a[0] = receipt
+
+    # b = a[0][1]
+    # print(a[0].get("meta"))
+    # print(a[0].get("receipt"))
+
+    # a = json.loads(response.text)
+    # a1 = a.get("images").get("receipt").get("result")
+    # print(a1.get("paymentInfo"))
+    # #
+    # print(a['images']['receipt']['result']['paymentInfo']['date']['text'])
+    # print(a['images']['receipt']['result']['totalPrice']['price']['text'])
+
+    # print(json.loads(response.text))
 
     # print(receipt_date)
     # print(receipt_price)
