@@ -1,7 +1,10 @@
+import json
 from math import trunc
 import datetime
 from dateutil.relativedelta import relativedelta
 from multiprocessing import connection
+
+from django.core import serializers
 from django.db.models import Sum
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -12,22 +15,41 @@ from rest_framework.response import Response
 from dateutil.relativedelta import relativedelta
 
 from .models import Income
-from .serializers import GetIncomeSerializer, PostIncomeSerializer
+from .serializers import GetIncomeSerializer, PostIncomeSerializer, PutIncomeSerializer
 
 
-@api_view(['GET'])
+
+@api_view(['GET'])  # C-1 해당 유저 수입 내역 조회
 def getincomeList(request, user_id):
-        datas = Income.objects.filter(user_id=user_id, is_deleted='0')
-        serializer = GetIncomeSerializer(datas, many=True)
-        return Response(serializer.data)
+    datas = Income.objects.filter(user_id=user_id, is_deleted=False)
+    serializer = GetIncomeSerializer(datas, many=True)
+    total_cost = 0
+    for i in datas:
+        total_cost += i.cost
+    return JsonResponse({'user_id,': user_id, 'income_list': serializer.data, 'total_price': total_cost})
 
-@api_view(['POST'])
+@api_view(['POST']) # C-2 해당 유저 수입 등록
 def postnewIncome(request):
         serializer = PostIncomeSerializer(data=request.data)
         if serializer.is_valid():
                 serializer.save()
                 return JsonResponse(serializer.data, status=201)
         return JsonResponse(serializer.errors, status=400)
+
+@api_view(['PUT', 'DELETE']) # C-3,4 해당 유저 수입 수정, 삭제
+def putnewIncome(request, income_id):
+    if request.method == 'PUT':
+        data = request.data
+        update_data = Income.objects.get(income_id=income_id)
+        serializer = PutIncomeSerializer(instance=update_data, data=data)
+        if serializer.is_valid():
+            serializer.save
+            return Response(serializer.data, status=200)
+        return Response(serializer.errors, status=400)
+    elif request.method == 'DELETE':
+        delete_data = Income.objects.filter(income_id=income_id, is_deleted=False)
+        delete_data.update(is_deleted=True)
+        return Response(status=204)
 
 @api_view(['GET'])  # D-4 3개월 전 수입 총합
 def get_three_month_ago_income(request, user_id):
