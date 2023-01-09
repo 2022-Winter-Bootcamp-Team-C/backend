@@ -11,6 +11,25 @@ class GetIncomeSerializer(serializers.ModelSerializer):
         model = Income
         fields = ['income_id', 'cost', 'when', 'purpose', 'memo']
 
+<<<<<<< HEAD
+=======
+class PostIncomeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Income
+        fields = ['user', 'cost', 'when', 'purpose', 'memo']
+
+class PutIncomeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Income
+        fields = '__all__'
+
+class DeleteSerializer(ModelSerializer):
+    class Meta:
+        model = Income
+        fields = ['is_deleted']
+
+
+>>>>>>> main
 class PostIncomeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Income
