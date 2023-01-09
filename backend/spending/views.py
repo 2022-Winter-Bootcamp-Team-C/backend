@@ -32,20 +32,19 @@ from .serializers import SpendingGetSerializer, SpendingPostSerializer, Spending
 def get_spending_datas(request, user_id):
     spending_datas = Spending.objects.filter(user_id=user_id, is_deleted=False)
     total_spending = 0
-    temp_list=list()
     for i in spending_datas:
-        temp_list.append(i.cost)
-        total_spending += sum(temp_list)
-    spending_lists = [
-        {
-            "spending_id" : spending_datas[0].spending_id,
-            "when" : spending_datas[0].when,
-            "cost" : spending_datas[0].cost,
-            "purpose" : spending_datas[0].purpose,
-            "memo" : spending_datas[0].memo,
-        } for spending_list in spending_datas
-    ]
-    return JsonResponse({"user_id" : user_id,"spending_list" : spending_lists, 'total_spending': int(total_spending)},status=status.HTTP_200_OK)
+        total_spending += i.cost
+    spending_list=[]
+    for spending_data in spending_datas:
+        spending_list.append({
+            "spending_id" : spending_data.spending_id,
+            "when": spending_data.when,
+            "cost": spending_data.cost,
+            "purpose": spending_data.purpose,
+            "memo": spending_data.memo,
+        })
+
+    return JsonResponse({"user_id" : user_id,"spending_list" : spending_list, 'total_spending': int(total_spending)}, status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])  # B-2 지출 등록폼 입력 후 DB에 저장
