@@ -7,12 +7,13 @@ import json
 from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from backend.settings import OCR_SECRET_KEY, OCR_API_URL
 
 
 @api_view(['POST'])
 def ocr_receipt(request):
-    api_url = 'https://hudfkr1v5p.apigw.ntruss.com/custom/v1/19970/5306aa9f52013ed8693a9db38f37b929f578eb212f4c63f670641facc747471e/general'
-    secret_key = 'aEhuQlZ4WFhuUFNFZkpXY2NYUUhqb2lQcHhQWW1EWkI='
+    api_url = OCR_API_URL
+    secret_key = OCR_SECRET_KEY
     image_file = request.data['url']
 
     request_json = {
@@ -36,9 +37,16 @@ def ocr_receipt(request):
     }
 
     response = requests.request("POST", api_url, headers=headers, data=payload, files=files)
+    print(json.loads(response.text))
     return Response(json.loads(response.text))
     # print(response.text.encode('utf8'))
 
+    # spec = json.loads(response.text)
+    # print(spec['images'])
+    # print(payload)
+    # print(response.text.encode('utf8'))
+
+    # return Response(spec["addresses"])
 
     # with open(request.data['url'], "rb") as f:
     #     img = base64.b64encode(f.read())
