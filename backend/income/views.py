@@ -18,9 +18,8 @@ from .models import Income
 from .serializers import GetIncomeSerializer, PostIncomeSerializer, PutIncomeSerializer
 
 
-
 @api_view(['GET'])  # C-1 해당 유저 수입 내역 조회
-def getincomeList(request, user_id):
+def get_income_list(request, user_id):
     datas = Income.objects.filter(user_id=user_id, is_deleted=False)
     serializer = GetIncomeSerializer(datas, many=True)
     total_cost = 0
@@ -28,16 +27,18 @@ def getincomeList(request, user_id):
         total_cost += i.cost
     return JsonResponse({'user_id,': user_id, 'income_list': serializer.data, 'total_price': total_cost})
 
-@api_view(['POST']) # C-2 해당 유저 수입 등록
-def postnewIncome(request):
-        serializer = PostIncomeSerializer(data=request.data)
-        if serializer.is_valid():
-                serializer.save()
-                return JsonResponse(serializer.data, status=201)
-        return JsonResponse(serializer.errors, status=400)
 
-@api_view(['PUT', 'DELETE']) # C-3,4 해당 유저 수입 수정, 삭제
-def putnewIncome(request, income_id):
+@api_view(['POST'])  # C-2 해당 유저 수입 등록
+def post_new_income(request):
+    serializer = PostIncomeSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return JsonResponse(serializer.data, status=201)
+    return JsonResponse(serializer.errors, status=400)
+
+
+@api_view(['PUT', 'DELETE'])  # C-3,4 해당 유저 수입 수정, 삭제
+def put_new_income(request, income_id):
     if request.method == 'PUT':
         data = request.data
         update_data = Income.objects.get(income_id=income_id)
@@ -51,9 +52,9 @@ def putnewIncome(request, income_id):
         delete_data.update(is_deleted=True)
         return Response(status=204)
 
+
 @api_view(['GET'])  # D-4 3개월 전 수입 총합
 def get_three_month_ago_income(request, user_id):
-
     three_month_ago = datetime.datetime.now() - relativedelta(months=3)
 
     three_month_ago_income = Income.objects.filter(when__month=three_month_ago.month)
