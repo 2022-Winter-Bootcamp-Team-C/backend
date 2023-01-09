@@ -118,9 +118,9 @@ venv.bak/
 *.sublime-workspace
 *.sublime-project
 
-# sftp configuration file
+# sftp configuration file`
 sftp-config.json
-secret.json
+secrets.json
 # Package control specific files Package
 Control.last-run
 Control.ca-list
