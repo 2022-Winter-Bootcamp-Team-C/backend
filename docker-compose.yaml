@@ -1,0 +1,70 @@
+#version: "3.8"
+#
+#volumes:
+#  mysql_data:
+#
+#services:
+#  mysqldb:
+#    build: ./db
+#    environment:
+#      MYSQL_DATABASE: "smtm"
+#      MYSQL_PASSWORD: "d4594283!"
+#      MYSQL_ROOT_PASSWORD: "d4594283!"
+#    ports:
+#      - "3307:3306"
+#    volumes:
+#      - mysql_data:/var/lib/mysql
+#
+#  backend:
+#    build: ./backend
+#    container_name: smtm-backend
+#    command: >
+#      bash -c "python manage.py makemigrations &&
+#               python manage.py migrate &&
+#               python manage.py runserver 0.0.0.0:8080" &&
+#
+#    ports:
+#      - "8000:8000"
+#    volumes:
+#      - ./backend:/app
+#    depends_on:
+#      - mysqldb
+#    links:
+#      - mysqldb
+
+version: "3"
+
+volumes:
+  mysql_data:
+
+services:
+  mysqldb:
+    build: ./db
+    volumes:
+          - mysql_data:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: "eg_user"
+      MYSQL_PASSWORD: "eg_pw"
+      MYSQL_ROOT_PASSWORD: "eg_db"
+    ports:
+      - "3306:3306"
+    container_name: mysqldb
+
+  backend:
+    build:
+      context: ./backend
+      args:
+        DJANGO_ALLOWED_HOSTS: "*"
+        DJANGO_SECRET_KEY: "*"
+        DJANGO_CORS_ORIGIN_WHITELIST: "*"
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/:/backend/
+    expose:
+      - 8000
+    env_file:
+      - ./db/.env.dev
+    depends_on:
+      - mysqldb

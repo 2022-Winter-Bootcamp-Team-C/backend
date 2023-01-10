@@ -33,7 +33,6 @@ env = environ.Env(
     SECRET_KEY=(str, 'SECRET_KEY'),
 )
 
-# reading .env file
 environ.Env.read_env()
 SECRET_KEY = env('SECRET_KEY')
 DEBUG = env('DEBUG')
