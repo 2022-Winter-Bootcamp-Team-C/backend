@@ -41,7 +41,6 @@ schema_view = get_schema_view(
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     path('api/v1/user/', include('user.urls')),
-    path('api/v1/login', include('user.urls')),
     path('api/v1/spending/', include('spending.urls')),
     path('api/v1/spending_challenge/', include('spending_challenge.urls')),
     path('api/v1/ocr', include('ocr.urls')),
