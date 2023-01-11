@@ -58,13 +58,10 @@ INSTALLED_APPS = [
 ]
 
 REST_FRAMEWORK = {
-    # 'DEFAULT_AUTHENTICATION_CLASSES': (
-    #      'rest_framework.authentication.TokenAuthentication',
-    # ),
-    # 'DEFAULT_PERMISSION_CLASSES': (
-    #      'rest_framework.permissions.IsAdminUser',
-    #     'rest_framework.permissions.DjangoModelPermissions',
-    # ),
+    # 'DEFAULT_AUTHENTICATION_CLASSES': [
+    #     'rest_framework.authentication.TokenAuthentication',
+    # ],
+    # 'DEFAULT_PERMISSION_C1LASSES': ('rest_framework.permissions.IsAuthenticated',)
 }
 
 MIDDLEWARE = [
