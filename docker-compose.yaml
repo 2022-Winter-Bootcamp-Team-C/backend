@@ -43,9 +43,9 @@ services:
     volumes:
           - mysql_data:/var/lib/mysql
     environment:
-      MYSQL_DATABASE: "eg_user"
-      MYSQL_PASSWORD: "eg_pw"
-      MYSQL_ROOT_PASSWORD: "eg_db"
+      MYSQL_DATABASE: "smtm"
+      MYSQL_PASSWORD: "3690"
+      MYSQL_ROOT_PASSWORD: "3690"
     ports:
       - "3306:3306"
     container_name: mysqldb
