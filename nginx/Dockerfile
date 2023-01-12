@@ -1,3 +1,17 @@
+#FROM nginx:latest
+#
+#RUN rm /etc/nginx/conf.d/default.conf
+#COPY nginx.conf /etc/nginx/conf.d
+
+#
+#FROM nginx:latest
+#
+#RUN rm /etc/nginx/nginx.conf
+#COPY nginx.conf /etc/nginx/
+#RUN rm /etc/nginx/conf.d/default.conf
+#COPY nginx.conf /etc/nginx/conf.d
+
+
 FROM nginx:latest
 
 # Delete nginx default configuration file in virtual directory

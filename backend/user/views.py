@@ -47,39 +47,15 @@ from .service import create_user
 #     else:
 #         return Response(status==status.HTTP_400_BAD_REQUEST)
 
-# @api_view(['POST'])
-# def login_user(request):
-#     user_email=request.data.get('email', "")
-#     user_pw=request.data.get('password', "")
-#     user = User.objects.filter(email=user_email).first()
-#     if user is None:
-#         return Response({'msg': "해당 ID의 사용자가 없습니다."})
-#     if check_password(user_pw, user.password):
-#         return Response({'msg': "로그인 성공", 'user_id': user.user_id})
-#     else:
-#         return Response({'msg': "로그인 실패. 패스워드 불일치"})
-#
-#
-#
-#
-# @api_view(['POST'])
-# def regis_user(request):
-#     user_email = request.data.get('email', "")
-#     user_pw = request.data.get('password', "")
-#     user_pw_crypted = make_password(user_pw)  # 암호화
-#     if User.objects.filter(email=user_email).exists():
-#         user=User.objects.filter(email=user_email).first()
-#         data = dict(
-#             msg="이미 존재하는 아이디입니다.",
-#             email=user.email,
-#             password=user.password
-#         )
-#         return Response(data)
-#
-#     User.objects.create(email=user_email, password=user_pw_crypted)
-#     data=dict(
-#         email=user_email,
-#         password=user_pw_crypted
-#     )
-#
-#     return Response(data=data)
+
+@api_view(['POST'])
+def login(request):
+    try:
+        user_data = User.objects.get(email=request.data['email'])
+        if user_data.password == request.data['password']:
+            return JsonResponse({'user_id': user_data.user_id}, safe=False, status=status.HTTP_200_OK)
+        else:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+    except User.DoesNotExist:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
