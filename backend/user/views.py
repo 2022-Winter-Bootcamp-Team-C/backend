@@ -31,17 +31,11 @@ def join(request):  # 회원가입
 
 @api_view(['POST'])
 def login(request):
-    input_email = request.data['email']
-    input_password = request.data['password']
-
-    user_data = User.objects.get(email=input_email)
-
-    if user_data:
-        if user_data.password == input_password:
-            return JsonResponse({'email': input_email, 'password': input_password}, status=status.HTTP_200_OK,
-                                safe=False)
+    try:
+        user_data = User.objects.get(email=request.data['email'])
+        if user_data.password == request.data['password']:
+            return JsonResponse({'user_id': user_data.user_id}, safe=False, status=status.HTTP_200_OK)
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)
-    else:
-        return Response(status==status.HTTP_400_BAD_REQUEST)
-
+    except User.DoesNotExist:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
