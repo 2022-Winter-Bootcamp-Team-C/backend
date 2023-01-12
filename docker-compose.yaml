@@ -44,8 +44,10 @@ services:
           - mysql_data:/var/lib/mysql
     environment:
       MYSQL_DATABASE: "smtm"
-      MYSQL_PASSWORD: "d4594283!"
-      MYSQL_ROOT_PASSWORD: "d4594283!"
+
+      MYSQL_PASSWORD: "3690"
+      MYSQL_ROOT_PASSWORD: "3690"
+
     ports:
       - "3306:3306"
     container_name: mysqldb
@@ -74,8 +76,13 @@ services:
     ports:
       - "80:8080"
     volumes:
-      - ./config/nginx:/etc/nginx/conf.d/
+
+      - ./config/nginx:/etc/nginx/conf.d
       - ./backend:/backend
       - ./static:/static
     depends_on:
       - backend
+
+
+#컨테이너 수명 이후에도 데이터를 유지하기 위해 볼륨을 구성. 이 구성은 mysql컨테이너의 "mysql_data:/var/lib/mysql" 디렉터리에 바인딩
+
