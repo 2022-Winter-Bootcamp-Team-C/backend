@@ -57,7 +57,7 @@ services:
         DJANGO_ALLOWED_HOSTS: "*"
         DJANGO_SECRET_KEY: "*"
         DJANGO_CORS_ORIGIN_WHITELIST: "*"
-    command: python manage.py runserver 0.0.0.0:8000
+    command: gunicorn backend.wsgi --bind 0.0.0.0:8000
     ports:
       - "8000:8000"
     volumes:
@@ -68,3 +68,17 @@ services:
       - ./db/.env.dev
     depends_on:
       - mysqldb
+
+  nginx:
+    build: ./nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./config/nginx:/etc/nginx/conf.d
+      - ./backend:/backend
+      - ./static:/static
+    depends_on:
+      - backend
+
+
+#컨테이너 수명 이후에도 데이터를 유지하기 위해 볼륨을 구성. 이 구성은 mysql컨테이너의 "mysql_data:/var/lib/mysql" 디렉터리에 바인딩
