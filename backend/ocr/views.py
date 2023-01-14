@@ -1,13 +1,15 @@
-import requests
+import random
+
 import uuid
 import time
-import base64
 import json
-
+import requests
+from PIL import Image
+from django.core.files.storage import FileSystemStorage
 from django.http import JsonResponse
+from requests import Response
 from rest_framework import status
 from rest_framework.decorators import api_view
-from rest_framework.response import Response
 from backend.settings import OCR_SECRET_KEY, OCR_API_URL
 
 
@@ -15,7 +17,8 @@ from backend.settings import OCR_SECRET_KEY, OCR_API_URL
 def ocr_receipt(request):
     api_url = OCR_API_URL
     secret_key = OCR_SECRET_KEY
-    image_file = request.data['url']
+    # img = save_image(request.FILES['file'])
+    image_file = save_image(request.FILES['files'])
 
     request_json = {
         'images': [
@@ -105,3 +108,22 @@ def ocr_receipt(request):
     # data = json.dumps(data)
     # response = requests.post(URL, data=data, headers=headers)
     # return Response(json.loads(response.text))
+
+
+def save_image(files):
+    img_file = files
+    # img_file = request.FILES['file']
+    fs = FileSystemStorage(location='media/receipt', base_url='media/receipt')
+    filename = fs.save(img_file.name, img_file)
+    # img_url = fs.base_url + filename
+    return fs.url(filename)
+    # print(fs.url(filename))
+    # return Response(status=status.HTTP_200_OK)
+    # return fs.base_url + filename
+    # return fs.url(filename)
+
+    # img = Image.open(requests.get(img_file, stream=True).raw)
+    # n = str(random.randint(1, 1000))
+    # img_name = 'img' + n
+    # img.save(img_name + '.png')
+    # return img_name
