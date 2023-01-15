@@ -3,7 +3,7 @@
 *.pot
 *.pyc
 __pycache__
-db.sqlite3
+backend/db.sqlite3
 media
 /env/
 # Backup files #
@@ -19,7 +19,7 @@ media
 
 # AWS User-specific
 .idea/**/aws.xml
-
+.idea
 # Generated files
 .idea/**/contentModel.xml
 
