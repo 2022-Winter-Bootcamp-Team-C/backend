@@ -10,7 +10,7 @@ from .views import get_spending_datas
 
 urlpatterns = [
     # path('', include(router.urls)),
-    path('new/', views.post_spending_data),
+    path('new', views.post_spending_data),
     path('purpose_ration/<user_id>', views.get_spending_rate_by_purpose),
     path('total_spending/<user_id>', views.get_spending_this_month),
     path('comparison_last_month/<user_id>', views.get_comparison_last_month),

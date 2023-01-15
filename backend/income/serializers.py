@@ -9,7 +9,7 @@ from user.models import User
 class GetIncomeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Income
-        fields = ['income_id', 'cost', 'when', 'purpose', 'memo']
+        fields = ['id', 'cost', 'when', 'purpose', 'memo']
 
 class PostIncomeSerializer(serializers.ModelSerializer):
     class Meta:

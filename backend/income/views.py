@@ -27,26 +27,28 @@ def get_income_list(request, user_id):
         total_cost += i.cost
     return JsonResponse({'user_id,': user_id, 'income_list': serializer.data, 'total_price': total_cost})
 
-@api_view(['POST']) # C-2 해당 유저 수입 등록
-def post_new_income(request):
-        serializer = PostIncomeSerializer(data=request.data)
-        if serializer.is_valid():
-                serializer.save()
-                return JsonResponse(serializer.data, status=201)
-        return JsonResponse(serializer.errors, status=400)
 
-@api_view(['PUT', 'DELETE']) # C-3,4 해당 유저 수입 수정, 삭제
-def put_new_Income(request, income_id):
+@api_view(['POST'])  # C-2 해당 유저 수입 등록
+def post_new_income(request):
+    serializer = PostIncomeSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return JsonResponse(serializer.data, status=201)
+    return JsonResponse(serializer.errors, status=400)
+
+
+@api_view(['PUT', 'DELETE'])  # C-3,4 해당 유저 수입 수정, 삭제
+def put_new_Income(request, id):
     if request.method == 'PUT':
         data = request.data
-        update_data = Income.objects.get(income_id=income_id)
+        update_data = Income.objects.get(id=id)
         serializer = PutIncomeSerializer(instance=update_data, data=data)
         if serializer.is_valid():
             serializer.save
             return Response(serializer.data, status=200)
         return Response(serializer.errors, status=400)
     elif request.method == 'DELETE':
-        delete_data = Income.objects.filter(income_id=income_id, is_deleted=False)
+        delete_data = Income.objects.filter(id=id, is_deleted=False)
         delete_data.update(is_deleted=True)
         return Response(status=204)
 

@@ -38,7 +38,7 @@ def get_spending_datas(request, user_id):
         spending_list = []
         for spending_data in spending_datas:
             spending_list.append({
-                "spending_id": spending_data.spending_id,
+                "id": spending_data.id,
                 "when": spending_data.when,
                 "cost": spending_data.cost,
                 "purpose": spending_data.purpose,
@@ -60,19 +60,21 @@ def post_spending_data(request):
 
 
 @api_view(['PUT', 'DELETE'])  # B-3 지출 내역 수정, B-4 지출 내역 삭제
-def put_delete_data(request, spending_id):
+def put_delete_data(request, id):
     if request.method == 'PUt':
         reqData = request.data  # reqData는 내가 수정을 원해서 서버에 전달하는 json데이터를 의미
-        data = Spending.objects.get(spending_id=spending_id)  # 앞의 spending_id는 Spending 테이블의 칼럼, 뒤의 spending_id는 요청 값으로 전달하는 spending_id 의미
+        data = Spending.objects.get(
+            id=id)  # 앞의 id는 Spending 테이블의 칼럼, 뒤의 id는 요청 값으로 전달하는 id 의미
         serializer = SpendingPostSerializer(instance=data, data=reqData)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'DELETE':
-        delete_data = Spending.objects.filter(spending_id=spending_id, is_deleted=False)
+        delete_data = Spending.objects.filter(id=id, is_deleted=False)
         delete_data.update(is_deleted=True)
         return Response(status=status.HTTP_201_CREATED)
+
 
 @api_view(['GET'])  # D-1 용도별 지출 비율
 def get_spending_rate_by_purpose(request, user_id):
@@ -154,7 +156,6 @@ def get_three_month_ago_spending(request, user_id):
 
 @api_view(['GET'])  # D-5 3개월 내 지출 평균 조회
 def get_three_month_spending_average(request, user_id):
-
     start_month = datetime.datetime.now() - relativedelta(months=3)
     end_month = datetime.datetime.now() - relativedelta(months=1)
 
@@ -168,4 +169,5 @@ def get_three_month_spending_average(request, user_id):
 
     three_month_spending_average = float(round(total_three_month_spending / 3, 1))
 
-    return JsonResponse({'three_month_spending_average': three_month_spending_average}, safe=False, status=status.HTTP_200_OK)
+    return JsonResponse({'three_month_spending_average': three_month_spending_average}, safe=False,
+                        status=status.HTTP_200_OK)
