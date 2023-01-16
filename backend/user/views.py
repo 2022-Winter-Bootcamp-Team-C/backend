@@ -1,59 +1,57 @@
 import bcrypt as bcrypt
 from django.contrib.auth import authenticate
-from django.contrib.auth.hashers import make_password, check_password
+from django.contrib.auth.hashers import make_password
+from django.contrib.messages.storage.cookie import MessageSerializer
+from django.contrib.sessions.models import Session
 from django.http import JsonResponse, HttpResponse
-from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import permissions, status
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
-from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
-from rest_framework.parsers import JSONParser
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated, AllowAny, DjangoModelPermissions
 from rest_framework.response import Response
-from django.core.validators import validate_email
-from django.core.exceptions import ValidationError
-from rest_framework.status import HTTP_200_OK
-
 from .models import User
-from .serializers import UserSerializer
-from .serializers import UserSignupResponse
-from .service import create_user
 
 
 @api_view(['POST'])
-def join(request):  # 회원가입
-    email = request.data['email']
-    password = request.data['password']
-    new_user = create_user(email, password)
-    data = UserSignupResponse(new_user, many=False).data
-    return JsonResponse(data, status=201)
-#
-#
-# @api_view(['POST'])
-# def login(request):
-#     input_email = request.data['email']
-#     input_password = request.data['password']
-#
-#     user_data = User.objects.get(email=input_email)
-#
-#     if user_data:
-#         if user_data.password == input_password:
-#             return JsonResponse({'email': input_email, 'password': input_password}, status=status.HTTP_200_OK,
-#                                 safe=False)
-#         else:
-#             return Response(status=status.HTTP_404_NOT_FOUND)
-#     else:
-#         return Response(status==status.HTTP_400_BAD_REQUEST)
+@permission_classes([AllowAny])     # 로그인 필요 x
+def join(request):      # A-1 회원 가입
+    input_email = request.data['email']
+    input_password = request.data['password']
 
-
-@api_view(['POST'])
-def login(request):
-    try:
-        user_data = User.objects.get(email=request.data['email'])
-        if user_data.password == request.data['password']:
-            return JsonResponse({'user_id': user_data.user_id}, safe=False, status=status.HTTP_200_OK)
+    err_data = {}
+    if not (input_email and input_password):
+        err_data['error'] = '모든 값을 입력해 주세요.'
+        return Response(err_data, status=status.HTTP_404_NOT_FOUND)
+    else:
+        if User.objects.filter(email=input_email).count() == 0:
+            user = User(email=input_email, password=input_password)
+            user.save()
+            return JsonResponse({"user_id": user.user_id})
         else:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-    except User.DoesNotExist:
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+            err_data['error'] = '이미 존재하는 email입니다.'
+            return Response(err_data, status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['POST'])
+@permission_classes([AllowAny])     # 로그인 필요 x
+def login(request):     # A-2 로그인
+    input_email = request.data['email']
+    input_password = request.data['password']
+
+    err_data = {}
+    if not (input_email and input_password):
+        err_data['error'] = '모든 값을 입력해 주세요.'
+        return Response(err_data, status=status.HTTP_404_NOT_FOUND)
+    else:
+        user = User.objects.get(email=input_email)
+        if input_password == user.password:
+            return JsonResponse({"user_id": user.user_id, "email": user.eamil})
+        else:
+            err_data['error'] = '비밀번호가 일치하지 않습니다'
+    return Response(err_data, status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['DELETE'])
+# @permission_classes([IsAuthenticated])  # 로그인 필요
+def logout(request):    # A-3 로그아웃
+    request.session.flush()
+    return Response(status=status.HTTP_200_OK)

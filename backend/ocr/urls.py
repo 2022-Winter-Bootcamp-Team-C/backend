@@ -3,5 +3,5 @@ from . import views
 
 urlpatterns = [
     path('', views.ocr_receipt),
-    path('/save', views.save_image),
+    path('save', views.save_image),
 ]
