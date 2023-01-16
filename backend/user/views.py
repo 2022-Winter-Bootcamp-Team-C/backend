@@ -12,7 +12,6 @@ from rest_framework.permissions import IsAuthenticated, AllowAny, DjangoModelPer
 from rest_framework.response import Response
 from .models import User
 
-
 @api_view(['POST'])
 @permission_classes([AllowAny])     # 로그인 필요 x
 def join(request):      # A-1 회원 가입
@@ -45,7 +44,7 @@ def login(request):     # A-2 로그인
     else:
         user = User.objects.get(email=input_email)
         if input_password == user.password:
-            return JsonResponse({"user_id": user.user_id, "email": user.eamil})
+            return JsonResponse({"user_id": user.user_id, "email": user.email})
         else:
             err_data['error'] = '비밀번호가 일치하지 않습니다'
     return Response(err_data, status=status.HTTP_404_NOT_FOUND)

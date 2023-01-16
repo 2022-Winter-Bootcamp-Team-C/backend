@@ -7,7 +7,6 @@ class User(models.Model):
     email = models.EmailField(max_length=200, null=False,default=False)
     password = models.CharField(max_length=255, null=False, default=False)
     created_at = models.DateTimeField(auto_now_add=True, blank=True)
-
     deleted_at = models.DateTimeField(auto_now=True, blank=True)
     is_deleted = models.BooleanField(default=False)
 
