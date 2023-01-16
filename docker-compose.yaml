@@ -85,4 +85,3 @@ services:
 
 
 #컨테이너 수명 이후에도 데이터를 유지하기 위해 볼륨을 구성. 이 구성은 mysql컨테이너의 "mysql_data:/var/lib/mysql" 디렉터리에 바인딩
-
