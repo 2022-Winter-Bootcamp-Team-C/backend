@@ -39,14 +39,17 @@ volumes:
 
 services:
   mysqldb:
+#    image: arm64v8/mysql:8.0.30
     build: ./db
     volumes:
           - mysql_data:/var/lib/mysql
-    environment:
-      MYSQL_DATABASE: "smtm"
-
-      MYSQL_PASSWORD: "3690"
-      MYSQL_ROOT_PASSWORD: "3690"
+    env_file:
+      - ./db/.env.db
+#    environment:
+#      MYSQL_DATABASE: "smtm"
+#      MYSQL_PASSWORD: "1234"
+#      MYSQL_ROOT_PASSWORD: "1234"
+#      MYSQL_USER: "user"
 
     ports:
       - "3306:3306"
