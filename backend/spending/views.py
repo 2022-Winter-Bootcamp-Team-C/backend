@@ -12,25 +12,24 @@ from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Spending
-from .serializers import SpendingGetSerializer, SpendingPostSerializer, SpendingGettoalcostSerializer, \
-    spending_delete_serializer
+from .serializers import spending_get_serializer, spending_get_totalcost_serializer, \
+    spending_delete_serializer, spending_post_serializer
+from user.models import User
 
-
-# Create your views here.
-
-# @api_view(['GET'])  # B-1 해당 유저 지출 내역 조회
-# def get_spending_datas(request, user_id):
-#     datas = Spending.objects.filter(user_id=user_id, is_deleted=False)      # 앞의 user_id Spending 테이블의 user_id 칼럼 의미, 뒤 user_id는 요청 값으로 전달하는 user_id 의미
-#     serializer = SpendingGetSerializer(datas, many=True)
-#     total_spending = 0
-#     for i in datas:
-#         total_spending += i.cost
-#     total_cost={'total_spending': int(total_spending)}
-#     return Response(serializer.data, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 def get_spending_datas(request, user_id):
+
+    try:
+        bool(User.objects.get(user_id=user_id))
+    except:
+        return JsonResponse({'message': "존재하지 않는 user"}, safe=False, status=status.HTTP_404_NOT_FOUND)
+
     spending_datas = Spending.objects.filter(user_id=user_id, is_deleted=False)
+
+    if len(spending_datas) == 0:
+        return JsonResponse({'message': "지출 내역이 없습니다."}, safe=False, status=status.HTTP_404_NOT_FOUND)
+
     total_spending = 0
 
     for i in spending_datas:
@@ -51,8 +50,11 @@ def get_spending_datas(request, user_id):
 
 @api_view(['POST'])  # B-2 지출 등록폼 입력 후 DB에 저장
 def post_spending_data(request):
+    if request.data['cost'] > 9999999:
+        return JsonResponse({'memssage': "금액은 최대 9,999,999원입니다."}
+                            , safe=False, status=status.HTTP_400_BAD_REQUEST)
     reqData = request.data
-    serializer = SpendingPostSerializer(data=reqData)
+    serializer = spending_post_serializer(data=reqData)
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -61,11 +63,15 @@ def post_spending_data(request):
 
 @api_view(['PUT', 'DELETE'])  # B-3 지출 내역 수정, B-4 지출 내역 삭제
 def put_delete_data(request, id):
-    if request.method == 'PUt':
+
+    data = Spending.objects.get(id=id)  # 앞의 id는 Spending 테이블의 칼럼, 뒤의 id는 요청 값으로 전달하는 id 의미
+    if data.is_deleted:
+        return JsonResponse({'memssage': "삭제된 지출 내역입니다."}
+                            , safe=False, status=status.HTTP_400_BAD_REQUEST)
+
+    if request.method == 'PUT':
         reqData = request.data  # reqData는 내가 수정을 원해서 서버에 전달하는 json데이터를 의미
-        data = Spending.objects.get(
-            id=id)  # 앞의 id는 Spending 테이블의 칼럼, 뒤의 id는 요청 값으로 전달하는 id 의미
-        serializer = SpendingPostSerializer(instance=data, data=reqData)
+        serializer = spending_post_serializer(instance=data, data=reqData)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -73,27 +79,27 @@ def put_delete_data(request, id):
     elif request.method == 'DELETE':
         delete_data = Spending.objects.filter(id=id, is_deleted=False)
         delete_data.update(is_deleted=True)
-        return Response(status=status.HTTP_201_CREATED)
+        return Response(status=status.HTTP_202_ACCEPTED)
 
 
 @api_view(['GET'])  # D-1 용도별 지출 비율
 def get_spending_rate_by_purpose(request, user_id):
-    all_querySet = Spending.objects.filter(user_id=user_id)
+    all_querySet = Spending.objects.filter(user_id=user_id, is_deleted=False)
     all_count = all_querySet.count()  # 전체 개수 구하기
 
-    food_querySet = Spending.objects.filter(user_id=user_id, purpose="식사")
+    food_querySet = Spending.objects.filter(user_id=user_id, purpose="식사", is_deleted=False)
     food_count = food_querySet.count()  # 식비 개수
 
-    transportation_querySet = Spending.objects.filter(user_id=user_id, purpose="교통/차량")
+    transportation_querySet = Spending.objects.filter(user_id=user_id, purpose="교통/차량", is_deleted=False)
     transportation_count = transportation_querySet.count()  # 교통비 개수
 
-    alcohol_querySet = Spending.objects.filter(user_id=user_id, purpose="술/유흥")
+    alcohol_querySet = Spending.objects.filter(user_id=user_id, purpose="술/유흥", is_deleted=False)
     alcohol_count = alcohol_querySet.count()  # 쇼핑 개수
 
-    mobile_querySet = Spending.objects.filter(user_id=user_id, purpose="주거/통신")
+    mobile_querySet = Spending.objects.filter(user_id=user_id, purpose="주거/통신", is_deleted=False)
     mobile_count = mobile_querySet.count()  # 쇼핑 개수
 
-    beauty_querySet = Spending.objects.filter(user_id=user_id, purpose="뷰티/미용")
+    beauty_querySet = Spending.objects.filter(user_id=user_id, purpose="뷰티/미용", is_deleted=False)
     beauty_count = beauty_querySet.count()  # 쇼핑 개수
 
     food_rate = round((food_count / all_count) * 100, 1)
@@ -110,7 +116,7 @@ def get_spending_rate_by_purpose(request, user_id):
 @api_view(['GET'])  # D-2 금월 지출 조회
 def get_spending_this_month(request, user_id):
     this_month = datetime.datetime.now().month
-    this_month_spending = Spending.objects.filter(user_id=user_id, when__month=this_month)
+    this_month_spending = Spending.objects.filter(user_id=user_id, when__month=this_month, is_deleted=False)
 
     total_spending = 0
 
@@ -125,12 +131,12 @@ def get_comparison_last_month(request, user_id):
     this_month_date = datetime.datetime.now()
     last_month_date = this_month_date - relativedelta(months=1)
 
-    this_month_spending = Spending.objects.filter(user_id=user_id, when__month=this_month_date.month)
+    this_month_spending = Spending.objects.filter(user_id=user_id, when__month=this_month_date.month, is_deleted=False)
     total_this_month_spending = 0
     for i in this_month_spending:
         total_this_month_spending += i.cost
 
-    last_month_spending = Spending.objects.filter(user_id=user_id, when__month=last_month_date.month)
+    last_month_spending = Spending.objects.filter(user_id=user_id, when__month=last_month_date.month, is_deleted=False)
     total_last_month_spending = 0
     for i in last_month_spending:
         total_last_month_spending += i.cost
@@ -145,7 +151,8 @@ def get_comparison_last_month(request, user_id):
 def get_three_month_ago_spending(request, user_id):
     three_month_ago_date = datetime.datetime.now() - relativedelta(months=3)
 
-    three_month_ago_spending = Spending.objects.filter(user_id=user_id, when__month=three_month_ago_date.month)
+    three_month_ago_spending = Spending.objects.filter(user_id=user_id, when__month=three_month_ago_date.month
+                                                       , is_deleted=False)
     total_three_month_ago_spending = 0
     for i in three_month_ago_spending:
         total_three_month_ago_spending += i.cost
