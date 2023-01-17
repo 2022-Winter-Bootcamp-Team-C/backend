@@ -53,7 +53,6 @@ def post_new_income(request):
 
 @api_view(['PUT', 'DELETE'])  # C-3,4 해당 유저 수입 수정, 삭제
 def put_new_Income(request, id):
-
     data = Income.objects.get(id=id)  # 앞의 id는 Spending 테이블의 칼럼, 뒤의 id는 요청 값으로 전달하는 id 의미
     if data.is_deleted:
         return JsonResponse({'memssage': "삭제된 수입 내역입니다."}
@@ -70,39 +69,6 @@ def put_new_Income(request, id):
         delete_data = Income.objects.filter(id=id, is_deleted=False)
         delete_data.update(is_deleted=True)
         return Response(status=status.HTTP_202_ACCEPTED)
-
-    # if request.method == 'PUT':
-    #     data = request.data
-    #     update_data = Income.objects.get(id=id)
-    #     serializer = PutIncomeSerializer(instance=update_data, data=data)
-    #     if serializer.is_valid():
-    #         serializer.save
-    #         return Response(serializer.data, status=200)
-    #     return Response(serializer.errors, status=400)
-    # elif request.method == 'DELETE':
-    #     delete_data = Income.objects.filter(id=id, is_deleted=False)
-    #     delete_data.update(is_deleted=True)
-    #     return Response(status=204)
-
-    # input_data = Income.objects.get(id=id)
-    # if input_data.is_deleted:
-    #     return JsonResponse({'memssage': "삭제된 수입 내역입니다."}
-    #                         , safe=False, status=status.HTTP_400_BAD_REQUEST)
-    #
-    # if request.method == 'PUT':
-    #     data = request.data
-    #     update_data = Income.objects.get(id=id)
-    #     serializer = PutIncomeSerializer(instance=update_data, data=data)
-    #
-    #     if serializer.is_valid():
-    #         serializer.save
-    #         return Response(serializer.data, status=200)
-    #     return Response(serializer.errors, status=400)
-    #
-    # elif request.method == 'DELETE':
-    #     delete_data = Income.objects.filter(id=id, is_deleted=False)
-    #     delete_data.update(is_deleted=True)
-    #     return Response(status=status.HTTP_202_ACCEPTED)
 
 
 @api_view(['GET'])  # D-4 3개월 전 수입 총합

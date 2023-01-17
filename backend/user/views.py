@@ -12,9 +12,10 @@ from rest_framework.permissions import IsAuthenticated, AllowAny, DjangoModelPer
 from rest_framework.response import Response
 from .models import User
 
+
 @api_view(['POST'])
-@permission_classes([AllowAny])     # 로그인 필요 x
-def join(request):      # A-1 회원 가입
+@permission_classes([AllowAny])  # 로그인 필요 x
+def join(request):  # A-1 회원 가입
     input_email = request.data['email']
     input_password = request.data['password']
 
@@ -31,9 +32,10 @@ def join(request):      # A-1 회원 가입
             err_data['error'] = '이미 존재하는 email입니다.'
             return Response(err_data, status=status.HTTP_404_NOT_FOUND)
 
+
 @api_view(['POST'])
-@permission_classes([AllowAny])     # 로그인 필요 x
-def login(request):     # A-2 로그인
+@permission_classes([AllowAny])  # 로그인 필요 x
+def login(request):  # A-2 로그인
     input_email = request.data['email']
     input_password = request.data['password']
 
@@ -49,8 +51,9 @@ def login(request):     # A-2 로그인
             err_data['error'] = '비밀번호가 일치하지 않습니다'
     return Response(err_data, status=status.HTTP_404_NOT_FOUND)
 
+
 @api_view(['DELETE'])
 # @permission_classes([IsAuthenticated])  # 로그인 필요
-def logout(request):    # A-3 로그아웃
+def logout(request):  # A-3 로그아웃
     request.session.flush()
     return Response(status=status.HTTP_200_OK)
