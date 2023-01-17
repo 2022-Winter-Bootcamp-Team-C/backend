@@ -4,7 +4,6 @@ import re
 import uuid
 import time
 import json
-
 import requests
 from django.core.files.storage import FileSystemStorage
 from django.http import JsonResponse
@@ -12,14 +11,17 @@ from requests import Response
 from rest_framework import status
 from rest_framework.decorators import api_view
 from backend.settings import OCR_SECRET_KEY, OCR_API_URL
+from django.core.files.storage import default_storage
+
+fs = FileSystemStorage(location='media/receipt', base_url='media/receipt')
 
 
 @api_view(['POST'])
 def ocr_receipt(request):
     api_url = OCR_API_URL
     secret_key = OCR_SECRET_KEY
-    # img = save_image(request.FILES['file'])
-    image_file = save_image(request.FILES['files'])
+    file_name = save_image(request.FILES['files'])
+    image_file = fs.url(file_name)
 
     request_json = {
         'images': [
@@ -37,6 +39,9 @@ def ocr_receipt(request):
     files = [
         ('file', open(image_file, 'rb'))
     ]
+
+    fs.delete(file_name)
+
     headers = {
         'X-OCR-SECRET': secret_key
     }
@@ -61,6 +66,5 @@ def ocr_receipt(request):
 
 def save_image(files):
     img_file = files
-    fs = FileSystemStorage(location='media/receipt', base_url='media/receipt')
     filename = fs.save(img_file.name, img_file)
-    return fs.url(filename)
+    return filename
