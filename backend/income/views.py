@@ -41,7 +41,7 @@ def get_income_list(request, user_id):
 
 @api_view(['POST'])  # C-2 해당 유저 수입 등록
 def post_new_income(request):
-    if request.data['cost'] > 9999999:
+    if int(request.data['cost']) > 9999999:
         return JsonResponse({'memssage': "금액은 최대 9,999,999원입니다."}
                             , safe=False, status=status.HTTP_400_BAD_REQUEST)
     serializer = post_income_serializer(data=request.data)

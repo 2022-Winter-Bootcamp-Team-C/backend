@@ -1,10 +1,11 @@
 import random
+import re
 
 import uuid
 import time
 import json
+
 import requests
-from PIL import Image
 from django.core.files.storage import FileSystemStorage
 from django.http import JsonResponse
 from requests import Response
@@ -45,11 +46,13 @@ def ocr_receipt(request):
     response_body = json.loads(response.text)
 
     images = response_body['images']
-
     images_receipt = images[0].get("receipt")
+
     receipt_memo = images_receipt['result']['storeInfo']['name']['text']
     receipt_date = images_receipt['result']['paymentInfo']['date']['text']
-    receipt_price = images_receipt['result']['totalPrice']['price']['text']
+    receipt_price = int(
+        float(re.sub(r"[^\uAC00-\uD7A30-9a-zA-Z\s]", "", images_receipt['result']['totalPrice']['price']['text'])))
+
     return JsonResponse({"memo": receipt_memo
                             , "date": receipt_date
                             , "cost": receipt_price},
