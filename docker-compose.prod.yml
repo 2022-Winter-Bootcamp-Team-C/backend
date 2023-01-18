@@ -30,7 +30,6 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - static_volume:/backend/sltaticfies
       - media_volume:/backend/mediafiles
       - ./backend/:/backend/
     expose:

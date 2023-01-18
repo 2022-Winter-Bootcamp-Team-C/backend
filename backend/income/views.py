@@ -32,11 +32,27 @@ def get_income_list(request, user_id):
     if len(datas) == 0:
         return JsonResponse({'message': "수입 내역이 없습니다."}, safe=False, status=status.HTTP_404_NOT_FOUND)
 
-    serializer = get_income_serializer(datas, many=True)
+    # serializer = get_income_serializer(datas, many=True)
+    # total_cost = 0
+    # for i in datas:
+    #     total_cost += i.cost
+    # return JsonResponse({'user_id,': user_id, 'income_list': serializer.data, 'total_price': int(total_cost)})
     total_cost = 0
+
     for i in datas:
         total_cost += i.cost
-    return JsonResponse({'user_id,': user_id, 'income_list': serializer.data, 'total_price': total_cost})
+        income_list = []
+        for data in datas:
+            income_list.append({
+                "id": data.id,
+                "when": data.when,
+                "cost": data.cost,
+                "purpose": data.purpose,
+                "memo": data.memo,
+            })
+
+    return JsonResponse({"user_id": user_id, "income_list": income_list, 'total_cost': int(total_cost)},
+                        status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])  # C-2 해당 유저 수입 등록
@@ -71,7 +87,20 @@ def put_new_Income(request, id):
         return Response(status=status.HTTP_202_ACCEPTED)
 
 
-@api_view(['GET'])  # D-4 3개월 전 수입 총합
+@api_view(['GET'])  # D-3 금월 총 수입
+def get_income_this_month(request, user_id):
+    this_month = datetime.datetime.now().month
+    this_month_spending = Income.objects.filter(user_id=user_id, when__month=this_month, is_deleted=False)
+
+    total_income = 0
+
+    for i in this_month_spending:
+        total_income += i.cost
+
+    return JsonResponse({'total_spending': format(total_income, ',')}, safe=False, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])  # D-5 3개월 전 수입 총합
 def get_three_month_ago_income(request, user_id):
     three_month_ago = datetime.datetime.now() - relativedelta(months=3)
 
@@ -80,5 +109,5 @@ def get_three_month_ago_income(request, user_id):
     for i in three_month_ago_income:
         total_three_month_ago_income += i.cost
 
-    return JsonResponse({'total_three_month_ago_income': int(total_three_month_ago_income)}, safe=False,
+    return JsonResponse({'total_three_month_ago_income': format(total_three_month_ago_income, ',')}, safe=False,
                         status=status.HTTP_200_OK)
