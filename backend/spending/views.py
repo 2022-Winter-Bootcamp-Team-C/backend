@@ -133,10 +133,10 @@ def get_spending_this_month(request, user_id):
     for i in this_month_spending:
         total_spending += i.cost
 
-    return JsonResponse({'total_spending': int(total_spending)}, safe=False, status=status.HTTP_200_OK)
+    return JsonResponse({'total_spending': format(total_spending, ',')}, safe=False, status=status.HTTP_200_OK)
 
 
-@api_view(['GET'])  # D-3 한 달 전 지출 비교
+@api_view(['GET'])  # D-4 한 달 전 지출 비교
 def get_comparison_last_month(request, user_id):
     this_month_date = datetime.datetime.now()
     last_month_date = this_month_date - relativedelta(months=1)
@@ -151,13 +151,13 @@ def get_comparison_last_month(request, user_id):
     for i in last_month_spending:
         total_last_month_spending += i.cost
 
-    comparison_total_spending = int(total_this_month_spending - total_last_month_spending)
+    comparison_total_spending = format(total_this_month_spending - total_last_month_spending, ',')
 
     return JsonResponse({'comparison_total_spending': comparison_total_spending}, safe=False,
                         status=status.HTTP_200_OK)
 
 
-@api_view(['GET'])  # D-5 3개월 전 지출 총합
+@api_view(['GET'])  # D-6 3개월 내 지출 총합
 def get_three_month_ago_spending(request, user_id):
     three_month_ago_date = datetime.datetime.now() - relativedelta(months=3)
 
@@ -167,11 +167,11 @@ def get_three_month_ago_spending(request, user_id):
     for i in three_month_ago_spending:
         total_three_month_ago_spending += i.cost
 
-    return JsonResponse({'total_three_month_ago_spending': int(total_three_month_ago_spending)}, safe=False,
+    return JsonResponse({'total_three_month_ago_spending': format(total_three_month_ago_spending, ',')}, safe=False,
                         status=status.HTTP_200_OK)
 
 
-@api_view(['GET'])  # D-5 3개월 내 지출 평균 조회
+@api_view(['GET'])  # D-7 3개월 내 지출 평균 조회
 def get_three_month_spending_average(request, user_id):
     start_month = datetime.datetime.now() - relativedelta(months=3)
     end_month = datetime.datetime.now() - relativedelta(months=1)
@@ -186,5 +186,5 @@ def get_three_month_spending_average(request, user_id):
 
     three_month_spending_average = float(round(total_three_month_spending / 3, 1))
 
-    return JsonResponse({'three_month_spending_average': three_month_spending_average}, safe=False,
+    return JsonResponse({'three_month_spending_average': format(three_month_spending_average, ',')}, safe=False,
                         status=status.HTTP_200_OK)

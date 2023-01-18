@@ -53,4 +53,4 @@ def get_remaining_budget(request, user_id):
 
     remaining_budget = budget - total_spending
 
-    return JsonResponse({"remaining_budget": remaining_budget}, safe=False, status=status.HTTP_200_OK)
+    return JsonResponse({"remaining_budget": format(remaining_budget, ',')}, safe=False, status=status.HTTP_200_OK)
