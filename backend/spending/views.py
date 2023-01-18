@@ -19,7 +19,6 @@ from user.models import User
 
 @api_view(['GET'])
 def get_spending_datas(request, user_id):
-
     try:
         bool(User.objects.get(user_id=user_id))
     except:
@@ -63,7 +62,6 @@ def post_spending_data(request):
 
 @api_view(['PUT', 'DELETE'])  # B-3 지출 내역 수정, B-4 지출 내역 삭제
 def put_delete_data(request, id):
-
     data = Spending.objects.get(id=id)  # 앞의 id는 Spending 테이블의 칼럼, 뒤의 id는 요청 값으로 전달하는 id 의미
     if data.is_deleted:
         return JsonResponse({'memssage': "삭제된 지출 내역입니다."}
@@ -84,29 +82,41 @@ def put_delete_data(request, id):
 
 @api_view(['GET'])  # D-1 용도별 지출 비율
 def get_spending_rate_by_purpose(request, user_id):
-    all_querySet = Spending.objects.filter(user_id=user_id, is_deleted=False)
-    all_count = all_querySet.count()  # 전체 개수 구하기
+    all_purpose = Spending.objects.filter(user_id=user_id, is_deleted=False)
+    all_spending_cost = 0
+    for i in all_purpose:
+        all_spending_cost += i.cost
 
     food_querySet = Spending.objects.filter(user_id=user_id, purpose="식사", is_deleted=False)
-    food_count = food_querySet.count()  # 식비 개수
+    food_cost = 0
+    for i in food_querySet:
+        food_cost += i.cost
 
     transportation_querySet = Spending.objects.filter(user_id=user_id, purpose="교통/차량", is_deleted=False)
-    transportation_count = transportation_querySet.count()  # 교통비 개수
+    transportation_cost = 0
+    for i in transportation_querySet:
+        transportation_cost += i.cost
 
     alcohol_querySet = Spending.objects.filter(user_id=user_id, purpose="술/유흥", is_deleted=False)
-    alcohol_count = alcohol_querySet.count()  # 쇼핑 개수
+    alcohol_cost = 0
+    for i in alcohol_querySet:
+        alcohol_cost += i.cost
 
     mobile_querySet = Spending.objects.filter(user_id=user_id, purpose="주거/통신", is_deleted=False)
-    mobile_count = mobile_querySet.count()  # 쇼핑 개수
+    mobile_cost = 0
+    for i in mobile_querySet:
+        mobile_cost += i.cost
 
     beauty_querySet = Spending.objects.filter(user_id=user_id, purpose="뷰티/미용", is_deleted=False)
-    beauty_count = beauty_querySet.count()  # 쇼핑 개수
+    beauty_cost = 0
+    for i in beauty_querySet:
+        beauty_cost += i.cost
 
-    food_rate = round((food_count / all_count) * 100, 1)
-    transportation_rate = round((transportation_count / all_count) * 100, 1)
-    alcohol_rate = round((alcohol_count / all_count) * 100, 1)
-    mobile_rate = round((mobile_count / all_count) * 100, 1)
-    beauty_rate = round((beauty_count / all_count) * 100, 1)
+    food_rate = round((food_cost / all_spending_cost) * 100, 1)
+    transportation_rate = round((transportation_cost / all_spending_cost) * 100, 1)
+    alcohol_rate = round((alcohol_cost / all_spending_cost) * 100, 1)
+    mobile_rate = round((mobile_cost / all_spending_cost) * 100, 1)
+    beauty_rate = round((beauty_cost / all_spending_cost) * 100, 1)
 
     return JsonResponse({'food_rate': food_rate, 'transportation_rate': transportation_rate,
                          'alcohol_rate': alcohol_rate, 'mobile_rate': mobile_rate,
