@@ -2,6 +2,7 @@ import json
 from math import trunc
 from multiprocessing import connection
 import datetime
+from decimal import Decimal
 from dateutil.relativedelta import relativedelta
 from django.db.models import Sum
 from django.http import JsonResponse
@@ -15,6 +16,8 @@ from .models import Spending
 from .serializers import spending_get_serializer, spending_get_totalcost_serializer, \
     spending_delete_serializer, spending_post_serializer
 from user.models import User
+
+from income.models import Income
 
 
 @api_view(['GET'])
@@ -187,4 +190,118 @@ def get_three_month_spending_average(request, user_id):
     three_month_spending_average = float(round(total_three_month_spending / 3, 1))
 
     return JsonResponse({'three_month_spending_average': format(three_month_spending_average, ',')}, safe=False,
+                        status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])  # D-8 금월 수입 지출 비율
+def get_spending_income_ratio_this_month(request, user_id):
+    this_month = datetime.datetime.now().month
+
+    this_month_spending = Spending.objects.filter(user_id=user_id, when__month=this_month, is_deleted=False)
+    total_spending = 0
+    for i in this_month_spending:
+        total_spending += i.cost
+
+    this_month_income = Income.objects.filter(user_id=user_id, when__month=this_month, is_deleted=False)
+    total_income = 0
+    for i in this_month_income:
+        total_income += i.cost
+
+    total_cost = total_income + total_spending
+
+    income_ratio = round((total_income / total_cost) * 100, 1)
+    spending_ratio = round((total_spending / total_cost) * 100, 1)
+
+    return JsonResponse({'income_ratio': income_ratio, 'spending_ratio': spending_ratio}, safe=False,
+                        status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])  # D-9 최근 3개월 수입 지출 비율
+def get_spending_income_ratio_3month(request, user_id):
+    last_month_ago = datetime.datetime.now() - relativedelta(months=1)
+    two_month_ago = datetime.datetime.now() - relativedelta(months=2)
+    three_month_ago = datetime.datetime.now() - relativedelta(months=3)
+
+    last_month_ago_spending = Spending.objects.filter(user_id=user_id, when__month=last_month_ago.month,
+                                                      is_deleted=False)
+    last_month_ago_total_spending = 0
+    for i in last_month_ago_spending:
+        last_month_ago_total_spending += i.cost
+
+    last_month_ago_income = Income.objects.filter(user_id=user_id, when__month=last_month_ago.month, is_deleted=False)
+    last_month_ago_total_income = 0
+    for i in last_month_ago_income:
+        last_month_ago_total_income += i.cost
+
+    last_month_ago_total_cost = last_month_ago_total_income + last_month_ago_total_spending
+
+    two_month_ago_spending = Spending.objects.filter(user_id=user_id, when__month=two_month_ago.month, is_deleted=False)
+    two_month_ago_total_spending = 0
+    for i in two_month_ago_spending:
+        two_month_ago_total_spending += i.cost
+
+    two_month_ago_income = Income.objects.filter(user_id=user_id, when__month=two_month_ago.month, is_deleted=False)
+    two_month_ago_total_income = 0
+    for i in two_month_ago_income:
+        two_month_ago_total_income += i.cost
+
+    two_month_ago_total_cost = two_month_ago_total_income + two_month_ago_total_spending
+
+    three_month_ago_spending = Spending.objects.filter(user_id=user_id, when__month=three_month_ago.month,
+                                                       is_deleted=False)
+    three_month_ago_total_spending = 0
+    for i in three_month_ago_spending:
+        three_month_ago_total_spending += i.cost
+
+    three_month_ago_income = Income.objects.filter(user_id=user_id, when__month=three_month_ago.month, is_deleted=False)
+    three_month_ago_total_income = 0
+    for i in three_month_ago_income:
+        three_month_ago_total_income += i.cost
+
+    three_month_ago_total_cost = three_month_ago_total_income + three_month_ago_total_spending
+
+    # three_month_spending_data_for_avg = Spending.objects.filter(user_id=user_id
+    #                                                             , when__gte=three_month_ago
+    #                                                             , when__lte=last_month_ago)
+    #
+    # total_three_month_spending = 0
+    # for i in three_month_spending_data_for_avg:
+    #     total_three_month_spending += i.cost
+    # three_month_spending_average = Decimal.from_float(float(trunc(total_three_month_spending / 3)))
+    #
+    # three_month_income_data_for_avg = Income.objects.filter(user_id=user_id
+    #                                                         , when__gte=three_month_ago
+    #                                                         , when__lte=last_month_ago)
+    #
+    # total_three_month_income = 0
+    # for i in three_month_income_data_for_avg:
+    #     total_three_month_income += i.cost
+    # three_month_income_average = Decimal.from_float(float(trunc(total_three_month_income / 3)))
+
+    try:
+        last_month_income_ratio = round((last_month_ago_total_income / last_month_ago_total_cost) * 100, 1)
+    except ZeroDivisionError:
+        last_month_income_ratio = Decimal.from_float(float(0))
+
+    last_month_spending_ratio = 100 - last_month_income_ratio
+
+    try:
+        two_month_income_ratio = round((two_month_ago_total_income / two_month_ago_total_cost) * 100, 1)
+    except ZeroDivisionError:
+        two_month_income_ratio = Decimal.from_float(float(0))
+    two_month_spending_ratio = 100 - two_month_income_ratio
+
+    try:
+        three_month_income_ratio = round((three_month_ago_total_income / three_month_ago_total_cost) * 100, 1)
+    except ZeroDivisionError:
+        three_month_income_ratio = Decimal.from_float(float(0))
+
+    three_month_spending_ratio = 100 - three_month_income_ratio
+
+    return JsonResponse({'last_month_income_ratio': last_month_income_ratio,
+                         'last_month_spending_ratio': last_month_spending_ratio,
+                         'two_month_income_ratio': two_month_income_ratio,
+                         'two_month_spending_ratio': two_month_spending_ratio,
+                         'three_month_income_ratio': three_month_income_ratio,
+                         'three_month_spending_ratio': three_month_spending_ratio, }, safe=False,
                         status=status.HTTP_200_OK)

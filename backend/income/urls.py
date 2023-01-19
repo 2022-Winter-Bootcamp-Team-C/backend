@@ -8,3 +8,4 @@ urlpatterns = [
     path('3month_sum/<user_id>', views.get_three_month_ago_income),
     path('total_income/<user_id>', views.get_income_this_month),
 ]
+
