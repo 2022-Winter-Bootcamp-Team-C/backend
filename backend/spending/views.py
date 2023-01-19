@@ -72,7 +72,7 @@ def put_delete_data(request, id):
 
     if request.method == 'PUT':
         reqData = request.data  # reqData는 내가 수정을 원해서 서버에 전달하는 json데이터를 의미
-        serializer = spending_post_serializer(instance=data, data=reqData)
+        serializer = spending_get_serializer(instance=data, data=reqData)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
