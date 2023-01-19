@@ -34,4 +34,4 @@ class delete_serializer(ModelSerializer):
 class post_income_serializer(serializers.ModelSerializer):
     class Meta:
         model = Income
-        fields = ['user', 'cost', 'when', 'purpose', 'memo']
+        fields = ['user', 'cost', 'when', 'memo']

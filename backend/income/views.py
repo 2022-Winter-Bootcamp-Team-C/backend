@@ -32,11 +32,6 @@ def get_income_list(request, user_id):
     if len(datas) == 0:
         return JsonResponse({'message': "수입 내역이 없습니다."}, safe=False, status=status.HTTP_404_NOT_FOUND)
 
-    # serializer = get_income_serializer(datas, many=True)
-    # total_cost = 0
-    # for i in datas:
-    #     total_cost += i.cost
-    # return JsonResponse({'user_id,': user_id, 'income_list': serializer.data, 'total_price': int(total_cost)})
     total_cost = 0
 
     for i in datas:
@@ -47,7 +42,6 @@ def get_income_list(request, user_id):
                 "id": data.id,
                 "when": data.when,
                 "cost": data.cost,
-                "purpose": data.purpose,
                 "memo": data.memo,
             })
 
