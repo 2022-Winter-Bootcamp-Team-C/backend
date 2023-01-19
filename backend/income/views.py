@@ -90,14 +90,14 @@ def put_new_Income(request, id):
 @api_view(['GET'])  # D-3 금월 총 수입
 def get_income_this_month(request, user_id):
     this_month = datetime.datetime.now().month
-    this_month_spending = Income.objects.filter(user_id=user_id, when__month=this_month, is_deleted=False)
+    this_month_income = Income.objects.filter(user_id=user_id, when__month=this_month, is_deleted=False)
 
     total_income = 0
 
-    for i in this_month_spending:
+    for i in this_month_income:
         total_income += i.cost
 
-    return JsonResponse({'total_spending': format(total_income, ',')}, safe=False, status=status.HTTP_200_OK)
+    return JsonResponse({'total_income': format(total_income, ',')}, safe=False, status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])  # D-5 3개월 전 수입 총합

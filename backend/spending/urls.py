@@ -19,4 +19,6 @@ urlpatterns = [
     path('spending-list/<user_id>', views.get_spending_datas),
     path('<id>', views.put_delete_data),
     path('3month_avg/<user_id>', views.get_three_month_spending_average),
+    path('spending_income_ratio/<user_id>', views.get_spending_income_ratio_this_month),
+    path('3month_spending_income_ratio/<user_id>', views.get_spending_income_ratio_3month),
 ]
