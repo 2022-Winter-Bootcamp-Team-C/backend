@@ -248,9 +248,9 @@ def get_spending_income_ratio_3month(request, user_id):
                                                          + two_month_ago_total_spending
                                                          + three_month_ago_total_spending) / 3))
 
-    three_month_income_avg = Decimal.from_float(float((last_month_ago_total_income
+    three_month_income_avg = round(Decimal.from_float(float((last_month_ago_total_income
                                                        + two_month_ago_total_income
-                                                       + three_month_ago_total_income) / 3))
+                                                       + three_month_ago_total_income) / 3)), 1)
 
     return JsonResponse({'last_month_ago_total_income': last_month_ago_total_income,
                          'last_month_ago_total_spending': last_month_ago_total_spending,

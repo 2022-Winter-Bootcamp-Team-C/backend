@@ -20,7 +20,7 @@ from user.models import User
 
 # Create your views here.
 
-class post_sending_challenge_data(APIView):      # E-1 지출 챌린지 금액을 설정하면 DB에 저장
+class post_sending_challenge_data(APIView):  # E-1 지출 챌린지 금액을 설정하면 DB에 저장
     @swagger_auto_schema(request_body=post_sending_challenge_serializer)
     def post(self, request):
         data = request.data
@@ -57,4 +57,5 @@ def get_remaining_budget(request, user_id):
 
     remaining_budget = budget - total_spending
 
-    return JsonResponse({"remaining_budget": format(remaining_budget, ',')}, safe=False, status=status.HTTP_200_OK)
+    return JsonResponse({"remaining_budget": format(remaining_budget, ','), "budget": budget}, safe=False,
+                        status=status.HTTP_200_OK)
