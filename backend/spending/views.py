@@ -75,7 +75,7 @@ class put_delete_data(APIView):  # B-3 지출 내역 수정, B-4 지출 내역 �
 
         if request.method == 'PUT':
             reqData = request.data  # reqData는 내가 수정을 원해서 서버에 전달하는 json데이터를 의미
-            serializer = spending_get_serializer(instance=data, data=reqData)
+            serializer = spending_put_serializer(instance=data, data=reqData)
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
