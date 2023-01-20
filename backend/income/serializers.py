@@ -35,3 +35,10 @@ class post_income_serializer(serializers.ModelSerializer):
     class Meta:
         model = Income
         fields = ['user', 'cost', 'when', 'memo']
+
+
+class income_post_data_serializer(serializers.Serializer):
+    user = serializers.CharField()
+    cost = serializers.IntegerField()
+    when = serializers.DateField()
+    memo = serializers.CharField()
