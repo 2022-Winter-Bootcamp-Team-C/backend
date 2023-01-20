@@ -3,15 +3,15 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
 from . import views
-from .views import get_spending_datas
+from .views import get_spending_datas, post_spending_data, put_delete_data
 
 # router = DefaultRouter()
 # router.register(r'posts', views.SpendingViewSet)
 
 urlpatterns = [
     path('spending-list/<user_id>', views.get_spending_datas),  # B-1
-    path('new/', views.post_spending_data),  # B-2
-    path('<id>', views.put_delete_data),  # B-3
+    path('new/', post_spending_data.as_view()),  # B-2
+    path('<id>', put_delete_data.as_view()),  # B-3
     path('purpose_ration/<user_id>', views.get_spending_rate_by_purpose),  # D-1
     path('total_spending/<user_id>', views.get_spending_this_month),  # D-2
     path('comparison_last_month/<user_id>', views.get_comparison_last_month),  # D-4
