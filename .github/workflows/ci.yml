@@ -26,7 +26,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r backend/requirements.txt
     - name: Run Tests
-      run:
+      run: |
 #        cd backend
         ls
         python manage.py test
