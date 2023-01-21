@@ -28,4 +28,4 @@ jobs:
     - name: Run Tests
       run: |
         ls -a
-        python manage.py test
+        python backend/manage.py test
