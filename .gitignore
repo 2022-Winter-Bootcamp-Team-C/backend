@@ -120,7 +120,7 @@ venv.bak/
 
 # sftp configuration file`
 sftp-config.json
-#secrets.json
+secrets.json
 # Package control specific files Package
 Control.last-run
 Control.ca-list
@@ -136,6 +136,6 @@ GitHub.sublime-settings
 !.vscode/extensions.json
 .history
 
-#secrets.json
+secrets.json
 .env.prod
 .env.prod.db
