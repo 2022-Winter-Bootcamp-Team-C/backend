@@ -26,11 +26,9 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r backend/requirements.txt
     - name: Run Tests
-
-      run:
-        pytest
-#        cd backend
-#        python manage.py test
-#      env:
-#        API_URL: ${{ secrets.API_URL }}
-#        SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      with:
+          API_URL: ${{ secrets.API_URL }}
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      run: |
+        cd backend
+        python manage.py test
