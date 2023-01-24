@@ -27,9 +27,10 @@ jobs:
         pip install -r backend/requirements.txt
     - name: Run Tests
 
-      run: |
-        cd backend
-        python manage.py test
-      env:
-        API_URL: ${{ secrets.API_URL }}
-        SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      run:
+        pytest
+#        cd backend
+#        python manage.py test
+#      env:
+#        API_URL: ${{ secrets.API_URL }}
+#        SECRET_KEY: ${{ secrets.SECRET_KEY }}
