@@ -1,12 +1,8 @@
 from django.template.defaulttags import url
 from django.urls import path, include
-from rest_framework.routers import DefaultRouter
 
 from . import views
 from .views import get_spending_datas, post_spending_data, put_delete_data
-
-# router = DefaultRouter()
-# router.register(r'posts', views.SpendingViewSet)
 
 urlpatterns = [
     path('spending-list/<user_id>', views.get_spending_datas),  # B-1
