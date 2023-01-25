@@ -119,10 +119,15 @@ def get_spending_rate_by_purpose(request, user_id):
                          'beauty_rate': beauty_rate}, safe=False, status=status.HTTP_200_OK)
 
 
+this_month_ago = datetime.datetime.now()  # 이번 달
+last_month_ago = datetime.datetime.now() - relativedelta(months=1)  # 한 달 전
+two_month_ago = datetime.datetime.now() - relativedelta(months=2)  # 두 달 전
+three_month_ago = datetime.datetime.now() - relativedelta(months=3)  # 세 달 전
+
+
 @api_view(['GET'])  # D-2 금월 지출 조회
 def get_spending_this_month(request, user_id):
-    this_month = datetime.datetime.now().month
-    this_month_spending = Spending.objects.filter(user_id=user_id, when__month=this_month, is_deleted=False)
+    this_month_spending = Spending.objects.filter(user_id=user_id, when__month=this_month_ago.month, is_deleted=False)
 
     total_spending = total_calculation(this_month_spending)
 
@@ -131,13 +136,10 @@ def get_spending_this_month(request, user_id):
 
 @api_view(['GET'])  # D-4 한 달 전 지출 비교
 def get_comparison_last_month(request, user_id):
-    this_month_date = datetime.datetime.now()
-    last_month_date = this_month_date - relativedelta(months=1)
-
-    this_month_spending = Spending.objects.filter(user_id=user_id, when__month=this_month_date.month, is_deleted=False)
+    this_month_spending = Spending.objects.filter(user_id=user_id, when__month=this_month_ago.month, is_deleted=False)
     total_this_month_spending = total_calculation(this_month_spending)
 
-    last_month_spending = Spending.objects.filter(user_id=user_id, when__month=last_month_date.month, is_deleted=False)
+    last_month_spending = Spending.objects.filter(user_id=user_id, when__month=last_month_ago.month, is_deleted=False)
     total_last_month_spending = total_calculation(last_month_spending)
 
     comparison_total_spending = format(total_this_month_spending - total_last_month_spending, ',')
@@ -148,9 +150,7 @@ def get_comparison_last_month(request, user_id):
 
 @api_view(['GET'])  # D-6 3개월 전(10월) 지출 총합
 def get_three_month_ago_spending(request, user_id):
-    three_month_ago_date = datetime.datetime.now() - relativedelta(months=3)
-
-    three_month_ago_spending = Spending.objects.filter(user_id=user_id, when__month=three_month_ago_date.month
+    three_month_ago_spending = Spending.objects.filter(user_id=user_id, when__month=three_month_ago.month
                                                        , is_deleted=False)
     total_three_month_ago_spending = total_calculation(three_month_ago_spending)
 
@@ -160,12 +160,10 @@ def get_three_month_ago_spending(request, user_id):
 
 @api_view(['GET'])  # D-7 금월 수입 지출 비율
 def get_spending_income_ratio_this_month(request, user_id):
-    this_month = datetime.datetime.now().month
-
-    this_month_spending = Spending.objects.filter(user_id=user_id, when__month=this_month, is_deleted=False)
+    this_month_spending = Spending.objects.filter(user_id=user_id, when__month=this_month_ago.month, is_deleted=False)
     total_spending = total_calculation(this_month_spending)
 
-    this_month_income = Income.objects.filter(user_id=user_id, when__month=this_month, is_deleted=False)
+    this_month_income = Income.objects.filter(user_id=user_id, when__month=this_month_ago.month, is_deleted=False)
     total_income = total_calculation(this_month_income)
 
     total_cost = total_income + total_spending
@@ -179,14 +177,9 @@ def get_spending_income_ratio_this_month(request, user_id):
 
 @api_view(['GET'])  # D-8 최근 3개월(10, 11, 12) 각 총 수입 지출 조회, 3개월 지출 , 수입 평균 조회
 def get_spending_income_ratio_3month(request, user_id):
-    last_month_ago = datetime.datetime.now() - relativedelta(months=1)
-    two_month_ago = datetime.datetime.now() - relativedelta(months=2)
-    three_month_ago = datetime.datetime.now() - relativedelta(months=3)
-
     last_month_ago_spending = Spending.objects.filter(user_id=user_id, when__month=last_month_ago.month,
                                                       is_deleted=False)
     last_month_ago_total_spending = total_calculation(last_month_ago_spending)
-
 
     last_month_ago_income = Income.objects.filter(user_id=user_id, when__month=last_month_ago.month, is_deleted=False)
     last_month_ago_total_income = total_calculation(last_month_ago_income)
