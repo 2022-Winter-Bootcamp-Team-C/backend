@@ -1,23 +1,16 @@
-import json
-from math import trunc
-from multiprocessing import connection
 import datetime
 from decimal import Decimal
 from dateutil.relativedelta import relativedelta
-from django.db.models import Sum
 from django.http import JsonResponse
-from django.shortcuts import render
-from django.views import View
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status, viewsets
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Spending
-from .serializers import spending_get_serializer, spending_post_serializer, spending_put_serializer, \
+from .serializers import spending_post_serializer, spending_put_serializer, \
     post_spending_data_serializer
 from user.models import User
-
 from income.models import Income
 
 
@@ -91,22 +84,19 @@ class put_delete_data(APIView):  # B-3 지출 내역 수정, B-4 지출 내역 �
 def get_spending_rate_by_purpose(request, user_id):
     all_purpose = Spending.objects.filter(user_id=user_id, is_deleted=False)
     all_spending_cost = total_calculation(all_purpose)
+    food_cost = transportation_cost = alcohol_cost = mobile_cost = beauty_cost = 0
 
-    food_querySet = Spending.objects.filter(user_id=user_id, purpose="식사", is_deleted=False)
-    food_cost = total_calculation(food_querySet)
-
-    transportation_querySet = Spending.objects.filter(user_id=user_id, purpose="교통/차량", is_deleted=False)
-    transportation_cost = total_calculation(transportation_querySet)
-
-    alcohol_querySet = Spending.objects.filter(user_id=user_id, purpose="술/유흥", is_deleted=False)
-    alcohol_cost = total_calculation(alcohol_querySet)
-
-    mobile_querySet = Spending.objects.filter(user_id=user_id, purpose="주거/통신", is_deleted=False)
-    mobile_cost = total_calculation(mobile_querySet)
-
-    # beauty_querySet = Spending.objects.filter(user_id=user_id, purpose="뷰티/미용", is_deleted=False)
-    beauty_cost = all_spending_cost - (food_cost + transportation_cost + alcohol_cost + mobile_cost)
-    print(beauty_cost)
+    for i in all_purpose:
+        if i.purpose == "식사":
+            food_cost += i.cost
+        elif i.purpose == "교통/차량":
+            transportation_cost += i.cost
+        elif i.purpose == "술/유흥":
+            alcohol_cost += i.cost
+        elif i.purpose == "주거/통신":
+            mobile_cost += i.cost
+        else:
+            beauty_cost += i.cost
 
     food_rate = round((food_cost / all_spending_cost) * 100, 1)
     transportation_rate = round((transportation_cost / all_spending_cost) * 100, 1)
