@@ -14,7 +14,8 @@ from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Spending
-from .serializers import spending_get_serializer, spending_post_serializer, spending_put_serializer, post_spending_data_serializer
+from .serializers import spending_get_serializer, spending_post_serializer, spending_put_serializer, \
+    post_spending_data_serializer
 from user.models import User
 
 from income.models import Income
@@ -85,6 +86,7 @@ class put_delete_data(APIView):  # B-3 지출 내역 수정, B-4 지출 내역 �
             delete_data.update(is_deleted=True)
             return Response(status=status.HTTP_202_ACCEPTED)
 
+
 @api_view(['GET'])  # D-1 용도별 지출 비율
 def get_spending_rate_by_purpose(request, user_id):
     all_purpose = Spending.objects.filter(user_id=user_id, is_deleted=False)
@@ -102,8 +104,9 @@ def get_spending_rate_by_purpose(request, user_id):
     mobile_querySet = Spending.objects.filter(user_id=user_id, purpose="주거/통신", is_deleted=False)
     mobile_cost = total_calculation(mobile_querySet)
 
-    beauty_querySet = Spending.objects.filter(user_id=user_id, purpose="뷰티/미용", is_deleted=False)
-    beauty_cost = total_calculation(beauty_querySet)
+    # beauty_querySet = Spending.objects.filter(user_id=user_id, purpose="뷰티/미용", is_deleted=False)
+    beauty_cost = all_spending_cost - (food_cost + transportation_cost + alcohol_cost + mobile_cost)
+    print(beauty_cost)
 
     food_rate = round((food_cost / all_spending_cost) * 100, 1)
     transportation_rate = round((transportation_cost / all_spending_cost) * 100, 1)
