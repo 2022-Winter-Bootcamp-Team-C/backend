@@ -36,7 +36,7 @@ class post_sending_challenge_data(APIView):  # E-1 지출 챌린지 금액을 �
             return JsonResponse({"message": "존재하지 않는 user입니다."}, status=401)
 
         if int(request.data['budget']) > 9999999 or int(request.data['budget']) < 0:
-            return JsonResponse({'memssage': "금액은 최대 9,999,999을 넘을 수 없고 음수를 입력할 수 없습니다."}
+            return JsonResponse({'memssage': "금액은 최대 9,999,999을 넘을 수 없거나 음수를 입력할 수 없습니다."}
                                 , safe=False, status=status.HTTP_400_BAD_REQUEST)
 
         serializer = spending_challenge_post_serializer(data=data)
