@@ -84,7 +84,7 @@ class put_delete_data(APIView):  # B-3 지출 내역 수정, B-4 지출 내역 �
 def get_spending_rate_by_purpose(request, user_id):
     all_purpose = Spending.objects.filter(user_id=user_id, is_deleted=False)
     all_spending_cost = total_calculation(all_purpose)
-    food_cost = transportation_cost = alcohol_cost = mobile_cost = beauty_cost = 0
+    food_cost = transportation_cost = alcohol_cost = mobile_cost = beauty_cost = shopping_cost = 0
 
     for i in all_purpose:
         if i.purpose == "식사":
@@ -95,6 +95,8 @@ def get_spending_rate_by_purpose(request, user_id):
             alcohol_cost += i.cost
         elif i.purpose == "주거/통신":
             mobile_cost += i.cost
+        elif i.purpose == "쇼핑":
+            shopping_cost += i.cost
         else:
             beauty_cost += i.cost
 
@@ -103,10 +105,12 @@ def get_spending_rate_by_purpose(request, user_id):
     alcohol_rate = round((alcohol_cost / all_spending_cost) * 100, 1)
     mobile_rate = round((mobile_cost / all_spending_cost) * 100, 1)
     beauty_rate = round((beauty_cost / all_spending_cost) * 100, 1)
+    shopping_rate = round((shopping_cost / all_spending_cost) * 100, 1)
 
     return JsonResponse({'food_rate': food_rate, 'transportation_rate': transportation_rate,
                          'alcohol_rate': alcohol_rate, 'mobile_rate': mobile_rate,
-                         'beauty_rate': beauty_rate}, safe=False, status=status.HTTP_200_OK)
+                         'beauty_rate': beauty_rate, 'shopping_rate': shopping_rate}, safe=False,
+                        status=status.HTTP_200_OK)
 
 
 this_month_ago = datetime.datetime.now()  # 이번 달
