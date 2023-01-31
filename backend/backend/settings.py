@@ -25,9 +25,6 @@ def get_secret(setting):
 OCR_SECRET_KEY = get_secret("SECRET_KEY")
 OCR_API_URL = get_secret("API_URL")
 
-OCR_SECRET_KEY = "SECRET_KEY"
-OCR_API_URL = "API_URL"
-
 DEBUG = True
 
 env = environ.Env(
