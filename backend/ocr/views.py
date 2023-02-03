@@ -70,8 +70,3 @@ def save_image(files):
     filename = filename.encode('utf-8')
     filename = fs.save(filename, img_file)
     return filename
-
-# def save_image(files):
-#     img_file = files
-#     filename = fs.save(img_file.name, img_file)
-#     return filename
